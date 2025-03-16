@@ -1,0 +1,49 @@
+# Importing necessary libraries
+import nltk
+import random
+import string
+import requests
+from nltk.chat.util import Chat, reflections
+
+# Download the punkt tokenizer data from NLTK (only need to run this once)
+nltk.download('punkt')
+
+# Function to fetch weather data (example API: OpenWeatherMap)
+def get_weather(city):
+    api_key = "your_weather_api_key"  # Replace with your actual API key
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+    response = requests.get(url)
+    data = response.json()
+
+    if data["cod"] != "404":
+        main = data["main"]
+        weather_desc = data["weather"][0]["description"]
+        temperature = main["temp"]
+        return f"The weather in {city} is currently {weather_desc} with a temperature of {temperature}°C."
+    else:
+        return "Sorry, I couldn't find the weather for that city."
+
+# Simple pattern-response pairs for the chatbot
+pairs = [
+    (r'hi|hello|hey', ['Hello! How can I help you today?', 'Hi! What can I do for you?']),
+    (r'how are you?', ['I am doing well, thank you!', 'I am good, how are you?']),
+    (r'what is your name?', ['I am a chatbot created by OpenAI!', 'You can call me Chatbot.']),
+    (r'quit', ['Goodbye! Have a nice day!', 'See you later!']),
+    (r'(.*) your name?', ['My name is Chatbot.', 'I am simply a chatbot, no specific name.']),
+    (r'(.*) help(.*)', ['Sure! I can assist you with general queries. What do you need help with?', 'I can help with basic questions. Ask me anything!']),
+    (r'(.*) (thanks|thank you)(.*)', ['You are welcome!', 'Happy to help!']),
+    (r'(.*)', ['Sorry, I didn\'t quite understand that.', 'Could you please rephrase?']),
+    
+    # Adding a pattern for weather queries
+    (r'what is the weather in (.*)', [get_weather])
+]
+
+# Create the chatbot using the Chat utility from NLTK
+def chatbot():
+    print("Hi! I am a chatbot. Type 'quit' to exit.")
+    chat = Chat(pairs, reflections)
+    chat.converse()
+
+# Start the chatbot
+if __name__ == "__main__":
+    chatbot()
