@@ -1,0 +1,60 @@
+import random
+
+# List of words to choose from
+word_list = ["python", "hangman", "programming", "developer", "algorithm", "code"]
+
+# Function to choose a random word
+def choose_word():
+    return random.choice(word_list)
+
+# Function to display the current state of the word with blanks
+def display_word(word, guessed_letters):
+    return ''.join([letter if letter in guessed_letters else '_' for letter in word])
+
+# Main Hangman game function
+def hangman():
+    word = choose_word()  # Randomly choose a word
+    guessed_letters = []  # List to store guessed letters
+    incorrect_guesses = 0  # Counter for incorrect guesses
+    max_incorrect_guesses = 6  # Maximum incorrect guesses before game ends
+    
+    print("Welcome to Hangman!")
+    print("Try to guess the word. You can only guess one letter at a time.")
+    print("You have", max_incorrect_guesses, "incorrect guesses allowed.")
+
+    # Game loop
+    while incorrect_guesses < max_incorrect_guesses:
+        print("\nCurrent word: ", display_word(word, guessed_letters))
+        print("Incorrect guesses left:", max_incorrect_guesses - incorrect_guesses)
+        
+        # Get player input
+        guess = input("Enter a letter: ").lower()
+
+        if len(guess) != 1 or not guess.isalpha():
+            print("Please enter a valid single letter.")
+            continue
+        
+        # Check if the letter was already guessed
+        if guess in guessed_letters:
+            print("You already guessed that letter. Try again.")
+            continue
+        
+        guessed_letters.append(guess)
+
+        # Check if the guessed letter is in the word
+        if guess in word:
+            print(f"Good guess! The letter '{guess}' is in the word.")
+        else:
+            print(f"Oops! The letter '{guess}' is not in the word.")
+            incorrect_guesses += 1
+
+        # Check if the player has guessed the whole word
+        if all(letter in guessed_letters for letter in word):
+            print("\nCongratulations! You've guessed the word:", word)
+            break
+    else:
+        print(f"\nGame Over! You've run out of guesses. The word was: {word}")
+
+# Run the game
+if __name__ == "__main__":
+    hangman()
